@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d1117" />
+  <meta name="description" content="Mega School 1 - Learn how to make wealth real for YOU!" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="MegaSchool1" />
+  <title>Mega School 1</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1c2330;
+      --border: #30363d;
+      --accent: #f5a623;
+      --accent2: #e8590c;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --green: #3fb950;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { height: 100%; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100%;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── LAYOUT ───────────────────────────────────────────── */
+    #app { display: flex; flex-direction: column; min-height: 100dvh; }
+
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(13,17,23,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px;
+      height: 56px;
+      display: flex; align-items: center; gap: 12px;
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+      text-decoration: none;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .hamburger {
+      display: flex; flex-direction: column; gap: 5px;
+      cursor: pointer; padding: 4px; background: none; border: none;
+    }
+    .hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--text); border-radius: 2px;
+      transition: all 0.25s ease;
+    }
+    .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+    /* ── DRAWER NAV ───────────────────────────────────────── */
+    #drawer {
+      position: fixed; inset: 56px 0 0 0; z-index: 99;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      width: 280px; max-width: 85vw;
+      transform: translateX(-100%);
+      transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+      overflow-y: auto; padding: 16px 0;
+    }
+    #drawer.open { transform: translateX(0); }
+
+    #drawer-backdrop {
+      position: fixed; inset: 56px 0 0 0; z-index: 98;
+      background: rgba(0,0,0,0.5);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.28s ease;
+    }
+    #drawer-backdrop.open { opacity: 1; pointer-events: all; }
+
+    .nav-section { padding: 4px 0; }
+    .nav-label {
+      font-size: 0.65rem; font-weight: 600; letter-spacing: 0.1em;
+      color: var(--text-muted); text-transform: uppercase;
+      padding: 12px 20px 4px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 20px;
+      color: var(--text); text-decoration: none;
+      font-size: 0.9rem; cursor: pointer;
+      transition: background 0.15s;
+      border: none; background: none; width: 100%; text-align: left;
+    }
+    .nav-item:hover { background: var(--surface2); }
+    .nav-item.active { color: var(--accent); background: rgba(245,166,35,0.08); }
+    .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .nav-divider { height: 1px; background: var(--border); margin: 8px 0; }
+
+    /* ── MAIN CONTENT ─────────────────────────────────────── */
+    main { flex: 1; padding: 16px; max-width: 640px; margin: 0 auto; width: 100%; }
+
+    .page { animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ── PAGE TITLE ───────────────────────────────────────── */
+    .page-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem; font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .page-subtitle {
+      color: var(--text-muted); font-size: 0.85rem;
+      margin-bottom: 20px;
+    }
+
+    /* ── CARDS ────────────────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .card-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700; font-size: 1rem;
+      margin-bottom: 6px;
+    }
+    .card-desc { color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; }
+
+    /* ── VIDEO EMBED ──────────────────────────────────────── */
+    .video-wrap {
+      position: relative; width: 100%; padding-bottom: 56.25%;
+      border-radius: var(--radius-sm); overflow: hidden;
+      background: #000; margin: 12px 0;
+    }
+    .video-wrap iframe {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%; border: none;
+    }
+
+    /* ── COPY BUTTON ──────────────────────────────────────── */
+    .copy-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px;
+      background: var(--accent); color: #000;
+      border: none; border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem; font-weight: 500;
+      cursor: pointer; transition: all 0.15s;
+      text-decoration: none;
+    }
+    .copy-btn:active { transform: scale(0.97); }
+    .copy-btn.copied { background: var(--green); }
+    .copy-btn.secondary {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .copy-btn.secondary:active { background: var(--border); }
+
+    /* ── SHAREABLE CHIP FILTERS ───────────────────────────── */
+    .chip-row {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      margin: 12px 0;
+    }
+    .chip {
+      padding: 5px 12px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 0.78rem; cursor: pointer;
+      background: var(--surface2); color: var(--text-muted);
+      transition: all 0.15s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .chip.active {
+      background: var(--accent); color: #000;
+      border-color: var(--accent); font-weight: 500;
+    }
+
+    /* ── SELECT ───────────────────────────────────────────── */
+    .select-wrap { position: relative; margin-bottom: 12px; }
+    .select-wrap select {
+      width: 100%; padding: 10px 36px 10px 12px;
+      background: var(--surface2); color: var(--text);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+      appearance: none; cursor: pointer;
+      outline: none;
+    }
+    .select-wrap::after {
+      content: '▾'; position: absolute; right: 12px; top: 50%;
+      transform: translateY(-50%); pointer-events: none;
+      color: var(--text-muted);
+    }
+
+    /* ── LINK LIST ────────────────────────────────────────── */
+    .link-list { display: flex; flex-direction: column; gap: 8px; }
+    .link-item {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; padding: 10px 12px;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+    .link-item a {
+      color: var(--accent); text-decoration: none; font-size: 0.85rem;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .link-item a:hover { text-decoration: underline; }
+
+    /* ── TOAST ────────────────────────────────────────────── */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%; z-index: 999;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--green); color: #000;
+      padding: 10px 20px; border-radius: 20px;
+      font-size: 0.85rem; font-weight: 500;
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+      white-space: nowrap; pointer-events: none;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── COLLAPSIBLE ──────────────────────────────────────── */
+    .collapsible { margin-bottom: 12px; }
+    .collapsible-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); cursor: pointer;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem;
+      transition: background 0.15s; user-select: none;
+    }
+    .collapsible-header:hover { background: var(--surface2); }
+    .collapsible-header .chevron {
+      transition: transform 0.25s; font-size: 0.75rem; color: var(--text-muted);
+    }
+    .collapsible-header.open .chevron { transform: rotate(180deg); }
+    .collapsible-body {
+      display: none; padding: 12px 0 4px;
+    }
+    .collapsible-body.open { display: block; }
+
+    /* ── VERSION ──────────────────────────────────────────── */
+    .version-tag {
+      text-align: center; color: var(--text-muted); font-size: 0.75rem;
+      padding: 24px 0 8px;
+    }
+
+    /* ── INSTALL BANNER ───────────────────────────────────── */
+    #install-banner {
+      display: none;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 12px 16px;
+      margin-bottom: 16px;
+      flex-direction: row; align-items: center; gap: 10px;
+    }
+    #install-banner.show { display: flex; }
+    #install-banner p { font-size: 0.85rem; color: var(--text-muted); flex: 1; }
+    #install-banner strong { color: var(--text); display: block; font-size: 0.9rem; }
+
+    /* ── WORDS PAGE ───────────────────────────────────────── */
+    .tab-row {
+      display: flex; gap: 4px; margin-bottom: 16px;
+      background: var(--surface2); padding: 4px; border-radius: var(--radius-sm);
+    }
+    .tab-btn {
+      flex: 1; padding: 8px;
+      background: none; border: none; border-radius: 6px;
+      color: var(--text-muted); font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem; cursor: pointer; transition: all 0.15s;
+    }
+    .tab-btn.active { background: var(--surface); color: var(--text); font-weight: 500; }
+
+    .steps { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+    .step {
+      display: flex; gap: 12px;
+      padding: 10px 12px;
+      background: var(--surface2); border-radius: var(--radius-sm);
+      font-size: 0.88rem; line-height: 1.5;
+    }
+    .step-num {
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      color: var(--accent); font-size: 0.85rem; flex-shrink: 0; padding-top: 1px;
+    }
+    .quote {
+      background: var(--surface2); border-left: 3px solid var(--accent);
+      padding: 10px 14px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic; font-size: 0.88rem; color: var(--text-muted);
+      margin: 4px 0;
+    }
+
+    /* ── INPUT (PAR/Settings) ──────────────────────────────── */
+    .input-field {
+      width: 100%; padding: 10px 12px;
+      background: var(--surface2); color: var(--text);
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+      outline: none; transition: border-color 0.15s;
+      margin-bottom: 8px;
+    }
+    .input-field:focus { border-color: var(--accent); }
+    .input-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; display: block; }
+
+    /* ── MEMBER ID BANNER ──────────────────────────────────── */
+    #member-banner {
+      background: rgba(245,166,35,0.1);
+      border: 1px solid rgba(245,166,35,0.3);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-size: 0.8rem; color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    #member-banner strong { color: var(--accent); }
+
+    /* ── RESPONSIVE ───────────────────────────────────────── */
+    @media (min-width: 640px) {
+      header { padding: 0 24px; }
+      main { padding: 20px 24px; }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <span class="logo" onclick="navigate('home')">Mega School 1</span>
+  </header>
+
+  <div id="drawer-backdrop" onclick="closeDrawer()"></div>
+  <nav id="drawer">
+    <div class="nav-section">
+      <div class="nav-label">Main</div>
+      <button class="nav-item" onclick="navigate('home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Home
+      </button>
+      <button class="nav-item" onclick="navigate('shareables')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Shareables
+      </button>
+      <button class="nav-item" onclick="navigate('words')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Words
+      </button>
+      <button class="nav-item" onclick="navigate('settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Settings
+      </button>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-section">
+      <div class="nav-label">Links</div>
+      <a class="nav-item" href="https://mwropportunity.com" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        MWR Opportunity
+      </a>
+      <a class="nav-item" href="https://mwrfinancial.com/simulator/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        Income Simulator
+      </a>
+    </div>
+    <div class="version-tag">Version 2026.3.1 (JS PWA)</div>
+  </nav>
+
+  <main id="main-content"></main>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════
+const CLASSES = [
+  { id: 'Share360Explainer', title: 'Non-Profit Fundraising', desc: 'Learn how your non-profit can receive perpetual donations through FREE bank programs.', videoId: 'ttv9VG7ZQzU', platform: 'YouTube' },
+  { id: 'FinancialLiteracy', title: 'AI Teaching Financial Literacy!', desc: 'Learn financial literacy through AI! Experience self discovery education using FREE AI tools!', videoId: 's_3H24nZvVU', platform: 'YouTube' },
+  { id: 'Ace', title: 'The Party - Youth Netflix Production', desc: 'Does your child (10-17) want to create a kid\'s show for Netflix? Come join us!', videoId: 's2x05FkBKtw', platform: 'YouTube' },
+  { id: 'CollegeFundingPique', title: 'Secret College Funds', desc: 'Learn how to unlock secret funds for college!', videoId: 'ZnUFF7mEQg4', platform: 'YouTube' },
+  { id: 'Fundable360', title: 'Business Credit & Funding', desc: 'Learn how to get $50K+ of business credit & funding with NO personal guarantee.', videoId: '1073232231', videoHash: '4e1e937740', platform: 'Vimeo' },
+  { id: 'BitcoinPreview', title: 'Bitcoin for Dummies (and other cryptos)', desc: 'Learn what Bitcoin is and how to make money with cryptocurrencies.', videoId: 'LqMEQaiecLw', platform: 'YouTube' },
+  { id: 'BizOwnerPique', title: 'Wealth Management for Business Owners', desc: 'Learn how to multiply and protect your profits, and increase employee retention.', videoId: 'WoT1v8b3dL0', platform: 'YouTube' },
+  { id: 'FaithAndFinanceTeaser', title: 'Church Financial Stewardship Ministries', desc: 'Learn how to receive God\'s FULL provision and share it with the Body of Christ!', videoId: '1054693146', platform: 'Vimeo' },
+  { id: 'CarPayoff1', title: 'Buy Your Teen\'s First Car NOW!', desc: 'How to buy your teen a $3,000 car WITHOUT making more money!', videoId: '797508067', videoHash: '279de12acd', platform: 'Vimeo' },
+  { id: 'GivBuxFundraiser', title: 'Non-Profit Fundraiser', desc: 'Learn how to partner with Amazon.com and local businesses to receive donations whenever your donors shop!', videoId: 'nr3Tk_06A0E', platform: 'YouTube' },
+  { id: 'TrustMyAssets', title: 'Trust Fund MY Baby!', desc: 'How make YOUR baby a trust fund baby. (Hint: you don\'t need to be rich!)', videoId: 'Y5ZLT5PAlCQ', platform: 'YouTube' },
+  { id: 'RealEstatePros', title: 'Real Estate Professionals', desc: 'Create cash flow from: Unqualified Renters, Unqualified Buyers, Past Clients, Your Agents.', videoId: '1067570667', platform: 'Vimeo' },
+  { id: 'MembershipPique', title: 'Finance Professionals (Insurance Agents, Accountants, Tax Preparers)', desc: 'Expand your financial service offering at no additional cost.', videoId: '1058410069', platform: 'Vimeo' },
+  { id: 'KeysToHomeOwnership', title: 'Home Buyers', desc: 'Rent to own, or simply automate the headaches of home buying.', videoId: '792645013', videoHash: 'dc43f0396a', platform: 'Vimeo' },
+  { id: 'PayoffMortgage', title: 'Debt Elimination (mortgage, school loans, credit card, etc)', desc: 'Accelerate your debt elimination without spending an extra penny!', videoId: '797508654', videoHash: '0f533292d2', platform: 'Vimeo' },
+  { id: 'PreciousMetals', title: 'Precious Metals', desc: 'Learn how to earn passive income on precious metals (12%-24% APY)!', videoId: '1163061642', platform: 'Vimeo' },
+  { id: 'HealthShare', title: 'Health Care', desc: 'Learn how Health Sharing (not insurance!) makes health care affordable.', videoId: '4mznHSk57nM', platform: 'YouTube' },
+  { id: 'PRA', title: '"Double Dip" Your Money', desc: 'Learn how to "double dip" with your money, legally and ethically.', videoId: 'c2_hG7NgNWU', platform: 'YouTube' },
+  { id: 'CreditRestoration', title: 'Credit Restoration', desc: 'Learn how to restore your credit with the help of a non-profit with 30+ years of credit restoration experience.', videoId: '699853589', videoHash: '8f81692407', platform: 'Vimeo' },
+  { id: 'StudentLoanDebtRelief', title: 'Student Loan Relief', desc: 'Learn how to reduce and possibly ELIMINATE your student loans!', videoUrl: 'https://sds-portal-assets-prd.efiscal.net/sds-intro.mp4', platform: 'Html5' },
+  { id: 'PrisonMinistry', title: 'Prison Ministry', desc: 'Learn how to help the incarcerated provide for their families, legally and ethically.', videoId: 'hrOLCGT11ig', platform: 'YouTube' },
+  { id: 'SchoolFundraiser', title: 'School Fundraisers', desc: 'Learn how to make money by fundraising for schools.', videoId: '-KmR2kfru0c', platform: 'YouTube' },
+];
+
+const SHAREABLES_DATA = {
+  Corporate: [
+    { id: 'MWRPique', title: 'MWR Pique', videoId: 'vWVa9Z8YR6Y', platform: 'YouTube' },
+    { id: 'MoneyChallenge', title: '72-Hour Money Challenge', videoId: '912771676', platform: 'Vimeo' },
+    { id: 'MWRCredibility', title: 'MWR Credibility', videoId: 'dX3cZZRSfUo', platform: 'YouTube' },
+    { id: 'MWR30SecTeaser', title: 'MWR 30-Second Teaser', videoId: '1001244060', platform: 'Vimeo' },
+    { id: 'MWR60SecTeaser', title: 'MWR 60-Second Teaser', videoId: 'F5JKzPl0hOY', platform: 'YouTube' },
+    { id: 'MindsetPique', title: 'Mindset Pique', videoId: 'KSB_r9mGpVo', platform: 'YouTube' },
+    { id: 'MilitaryPique', title: 'Military Pique', videoId: 'M9bJoLwqTfY', platform: 'YouTube' },
+    { id: 'Membership', title: 'MWR Membership', videoId: 'ZyaOvNR5TM4', platform: 'YouTube' },
+    { id: 'Promo', title: 'MONTHLY Yield w/ Precious Metals', videoId: 'XRVz3EvXXks', platform: 'YouTube' },
+    { id: 'CorporateBusinessOverview', title: 'Corporate Business Overview', videoId: 'dYC_g7RzZ3M', platform: 'YouTube' },
+  ],
+  'Mega School': [
+    { id: 'FinancialLiteracy', title: 'AI Teaching Financial Literacy!', videoId: 's_3H24nZvVU', platform: 'YouTube' },
+    { id: 'Ace', title: 'The Party - Youth Netflix Production', videoId: 's2x05FkBKtw', platform: 'YouTube' },
+    { id: 'CollegeFundingPique', title: 'Secret College Funds (Pique)', videoId: 'ZnUFF7mEQg4', platform: 'YouTube' },
+    { id: 'BitcoinPreview', title: 'Bitcoin for Dummies (Pique)', videoId: 'LqMEQaiecLw', platform: 'YouTube' },
+    { id: 'BizOwnerPique', title: 'Business Owner Pique', videoId: 'WoT1v8b3dL0', platform: 'YouTube' },
+    { id: 'PrisonMinistry', title: 'Prison Ministry', videoId: 'hrOLCGT11ig', platform: 'YouTube' },
+    { id: 'GivBuxFundraiser', title: 'GivBux for Charities', videoId: 'nr3Tk_06A0E', platform: 'YouTube' },
+  ],
+  'Faith & Finance': [
+    { id: 'FaithAndFinance', title: 'Faith & Finance (pique)', videoId: 'Ki7gsLFhlbA', platform: 'YouTube' },
+    { id: 'FaithAndFinanceTeaser', title: 'Faith & Finance (teaser)', videoId: '1054693146', platform: 'Vimeo' },
+    { id: 'FaithAndFinanceOverview', title: 'Faith & Finance Overview', videoId: '1068482000', platform: 'Vimeo' },
+  ],
+  'Real Estate': [
+    { id: 'RealEstatePros', title: 'Real Estate Pro Pique', videoId: '1067570667', platform: 'Vimeo' },
+    { id: 'RealEstateProsExt', title: 'Real Estate Pro (Extended)', videoId: '1068022111', platform: 'Vimeo' },
+    { id: 'KeysToHomeOwnership', title: 'Keys to Home Ownership', videoId: '792645013', videoHash: 'dc43f0396a', platform: 'Vimeo' },
+    { id: 'CreditRestoration', title: 'Credit Restoration', videoId: '699853589', videoHash: '8f81692407', platform: 'Vimeo' },
+  ],
+  Services: [
+    { id: 'PreciousMetals', title: 'Precious Metals', videoId: '1163061642', platform: 'Vimeo' },
+    { id: 'Fundable360', title: 'Fundable360 Pique', videoId: '1073232231', videoHash: '4e1e937740', platform: 'Vimeo' },
+    { id: 'F360Overview', title: 'Fundable360 Overview', videoId: '1074703700', videoHash: 'b77fb2ffd8', platform: 'Vimeo' },
+    { id: 'EliminateMyDebt', title: 'Eliminate My Debt', videoId: 'hTaXXU56-A4', platform: 'YouTube' },
+    { id: 'InstantPayRaise', title: 'Instant Pay Raise', videoId: 'RL_jYjkfCk8', platform: 'YouTube' },
+    { id: 'LowerMyBills', title: 'Lower My Bills', videoId: 'N1wQJ6S1k3s', platform: 'YouTube' },
+    { id: 'HealthShare', title: 'Health Share', videoId: '4mznHSk57nM', platform: 'YouTube' },
+    { id: 'CreditRestoration', title: 'Credit Restoration', videoId: '699853589', videoHash: '8f81692407', platform: 'Vimeo' },
+    { id: 'StudentLoanDebtRelief', title: 'Student Loan Relief', videoId: '1062341882', platform: 'Vimeo' },
+    { id: 'PayoffMortgage', title: 'Payoff Your Mortgage', videoId: '797508654', videoHash: '0f533292d2', platform: 'Vimeo' },
+    { id: 'PRA', title: 'Private Reserve Account', videoId: 'c2_hG7NgNWU', platform: 'YouTube' },
+    { id: 'TrustMyAssets', title: 'Trust My Assets', videoId: 'Y5ZLT5PAlCQ', platform: 'YouTube' },
+    { id: 'HowBanksMakeMoney', title: 'How the Banks Make Money', videoId: '797508578', videoHash: '526ab08e1f', platform: 'Vimeo' },
+  ],
+  GivBux: [
+    { id: 'GivBux', title: 'GivBux Overview', videoId: 'bqWrCrMqkAQ', platform: 'YouTube' },
+    { id: 'GivBuxAccountSetup', title: 'GivBux Account Setup', videoId: 'xPbC4O_s5rw', platform: 'YouTube' },
+    { id: 'GivBuxCharity', title: 'GivBux for Charities', videoId: 'nm2TXHqZ5LE', platform: 'YouTube' },
+    { id: 'GivBuxMerchant', title: 'GivBux for Merchants', videoId: 'oFqQ6V8FeG0', platform: 'YouTube' },
+    { id: 'GivBuxFundraiser', title: 'GivBux Fundraiser', videoId: 'nr3Tk_06A0E', platform: 'YouTube' },
+  ],
+};
+
+const QUICK_LINKS = [
+  { label: 'MWRopportunity.com', url: 'https://mwropportunity.com' },
+  { label: 'MWRleveragesimulator.com', url: 'https://mwrleveragesimulator.com' },
+  { label: 'MWRincomesimulator.com', url: 'https://mwrincomesimulator.com' },
+  { label: 'MWRcredibility.com', url: 'https://mwrcredibility.com' },
+];
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let currentPage = 'home';
+let memberId = localStorage.getItem('memberId') || '';
+let shareableCategory = 'Corporate';
+let selectedShareableIdx = 0;
+
+// ═══════════════════════════════════════════════
+// ROUTING
+// ═══════════════════════════════════════════════
+function navigate(page) {
+  currentPage = page;
+  closeDrawer();
+  render();
+  // Update active nav item
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', el.getAttribute('onclick') === `navigate('${page}')`);
+  });
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+// ═══════════════════════════════════════════════
+// DRAWER
+// ═══════════════════════════════════════════════
+const hamburger = document.getElementById('hamburger');
+const drawer = document.getElementById('drawer');
+const backdrop = document.getElementById('drawer-backdrop');
+
+hamburger.addEventListener('click', () => {
+  const isOpen = drawer.classList.toggle('open');
+  backdrop.classList.toggle('open', isOpen);
+  hamburger.classList.toggle('open', isOpen);
+});
+
+function closeDrawer() {
+  drawer.classList.remove('open');
+  backdrop.classList.remove('open');
+  hamburger.classList.remove('open');
+}
+
+// ═══════════════════════════════════════════════
+// VIDEO EMBED
+// ═══════════════════════════════════════════════
+function videoEmbed(item) {
+  if (!item) return '';
+  if (item.platform === 'YouTube') {
+    return `<div class="video-wrap">
+      <iframe src="https://www.youtube.com/embed/${item.videoId}?rel=0" allowfullscreen loading="lazy"></iframe>
+    </div>`;
+  }
+  if (item.platform === 'Vimeo') {
+    const hash = item.videoHash ? `?h=${item.videoHash}` : '';
+    return `<div class="video-wrap">
+      <iframe src="https://player.vimeo.com/video/${item.videoId}${hash}" allowfullscreen loading="lazy"></iframe>
+    </div>`;
+  }
+  if (item.platform === 'Html5' && item.videoUrl) {
+    return `<div class="video-wrap">
+      <video controls style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;">
+        <source src="${item.videoUrl}" />Your browser does not support the video tag.
+      </video>
+    </div>`;
+  }
+  return '';
+}
+
+// ═══════════════════════════════════════════════
+// COPY / TOAST
+// ═══════════════════════════════════════════════
+function copyText(text, label) {
+  navigator.clipboard.writeText(text).then(() => {
+    showToast(label || 'Copied!');
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ═══════════════════════════════════════════════
+// COLLAPSIBLE LOGIC
+// ═══════════════════════════════════════════════
+function collapsible(title, bodyHtml, startOpen = false) {
+  const id = 'c_' + Math.random().toString(36).slice(2);
+  return `
+    <div class="collapsible">
+      <div class="collapsible-header ${startOpen ? 'open' : ''}" onclick="toggleCollapsible('${id}', this)">
+        <span>${title}</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div id="${id}" class="collapsible-body ${startOpen ? 'open' : ''}">${bodyHtml}</div>
+    </div>`;
+}
+
+window.toggleCollapsible = function(id, header) {
+  const body = document.getElementById(id);
+  body.classList.toggle('open');
+  header.classList.toggle('open');
+};
+
+// ═══════════════════════════════════════════════
+// MEMBER ID BANNER
+// ═══════════════════════════════════════════════
+function memberBanner() {
+  if (!memberId) return `<div id="member-banner">
+    ⚙️ Set your <strong onclick="navigate('settings')" style="cursor:pointer;text-decoration:underline;">Member ID in Settings</strong> to personalize your enrollment links.
+  </div>`;
+  return `<div id="member-banner">Your Member ID: <strong>${memberId}</strong> — <span style="cursor:pointer;text-decoration:underline;color:var(--text-muted)" onclick="navigate('settings')">Edit</span></div>`;
+}
+
+function enrollmentLink(lang = 'en') {
+  const base = lang === 'en'
+    ? 'https://www.mwrfinancial.com/join/'
+    : 'https://www.mwrfinancial.com/es/join/';
+  return memberId ? `${base}${memberId}` : base;
+}
+
+// ═══════════════════════════════════════════════
+// PAGES
+// ═══════════════════════════════════════════════
+function renderHome() {
+  const classCards = CLASSES.map(c => `
+    <div class="card">
+      <div class="card-title">${c.title}</div>
+      <div class="card-desc">${c.desc}</div>
+      ${videoEmbed(c)}
+    </div>
+  `).join('');
+
+  return `<div class="page">
+    <div class="page-title">Mega School Classes</div>
+    <div class="page-subtitle">First class is FREE! Additional classes are $150 per class.*</div>
+    ${classCards}
+    <div class="version-tag">Version 2026.3.1 (JS PWA)</div>
+  </div>`;
+}
+
+function renderShareables() {
+  const categories = Object.keys(SHAREABLES_DATA);
+  const items = SHAREABLES_DATA[shareableCategory] || [];
+  const item = items[selectedShareableIdx] || items[0];
+
+  const catChips = categories.map(cat => `
+    <button class="chip ${cat === shareableCategory ? 'active' : ''}"
+      onclick="selectShareableCategory('${cat}')">${cat}</button>
+  `).join('');
+
+  const options = items.map((v, i) => `<option value="${i}">${v.title}</option>`).join('');
+
+  const shareMsg = item ? `${item.title}\n👇\nhttps://megaschool1.github.io/mwr` : '';
+
+  const enrollEn = enrollmentLink('en');
+  const enrollEs = enrollmentLink('es');
+
+  const quickLinks = QUICK_LINKS.map(l => `
+    <div class="link-item">
+      <a href="${l.url}" target="_blank" rel="noopener">${l.label}</a>
+      <button class="copy-btn secondary" style="padding:6px 10px;font-size:0.75rem;"
+        onclick="copyText('${l.url}', 'Link copied!')">Copy</button>
+    </div>
+  `).join('');
+
+  const iboSection = `
+    <div class="card">
+      <div class="card-title" style="margin-bottom:10px;">My Enrollment Link</div>
+      <div class="link-list">
+        <div class="link-item">
+          <a href="${enrollEn}" target="_blank">English Sign-up</a>
+          <button class="copy-btn secondary" style="padding:6px 10px;font-size:0.75rem;"
+            onclick="copyText('MWR Sign-up\n👇\n${enrollEn}', 'Shareable copied!')">Copy</button>
+        </div>
+        <div class="link-item">
+          <a href="${enrollEs}" target="_blank">Español Sign-up</a>
+          <button class="copy-btn secondary" style="padding:6px 10px;font-size:0.75rem;"
+            onclick="copyText('MWR Sign-up\n👇\n${enrollEs}', 'Shareable copied!')">Copy</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="margin-bottom:10px;">Other Links</div>
+      <div class="link-list">
+        <div class="link-item">
+          <a href="https://MakeWealthRealEvents.com" target="_blank">MWR Events</a>
+          <button class="copy-btn secondary" style="padding:6px 10px;font-size:0.75rem;"
+            onclick="copyText('http://MakeWealthRealEvents.com', 'Copied!')">Copy</button>
+        </div>
+        <div class="link-item">
+          <a href="https://calendar.time.ly/zb6amxcw/posterboard" target="_blank">Corporate Calendar</a>
+          <button class="copy-btn secondary" style="padding:6px 10px;font-size:0.75rem;"
+            onclick="copyText('MWR Corporate Calendar\n👇\nhttps://calendar.time.ly/zb6amxcw/posterboard', 'Copied!')">Copy</button>
+        </div>
+        <div class="link-item">
+          <a href="https://t.me/+gpFmytqMETExNDUx" target="_blank">Corporate Telegram</a>
+          <button class="copy-btn secondary" style="padding:6px 10px;font-size:0.75rem;"
+            onclick="copyText('MWR Corporate Telegram Group\n👇\nhttps://t.me/+gpFmytqMETExNDUx', 'Copied!')">Copy</button>
+        </div>
+        <div class="link-item">
+          <a href="https://megaschool1.github.io/mwr" target="_blank">Mega School App</a>
+          <button class="copy-btn secondary" style="padding:6px 10px;font-size:0.75rem;"
+            onclick="copyText('Mega School App\n👇\nhttps://megaschool1.github.io/', 'Copied!')">Copy</button>
+        </div>
+      </div>
+    </div>`;
+
+  return `<div class="page">
+    <div class="page-title">Shareables</div>
+    <div class="page-subtitle">Tap a category, pick a video, then copy &amp; share.</div>
+
+    ${memberBanner()}
+
+    <div class="card">
+      <div class="chip-row">${catChips}</div>
+      <div class="select-wrap">
+        <select onchange="selectShareable(this.value)">${options}</select>
+      </div>
+      ${item ? videoEmbed(item) : ''}
+      ${item ? `<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="copy-btn" onclick="copyText('${shareMsg}', 'Shareable copied!')">
+          📋 Copy Shareable
+        </button>
+        ${item.videoId ? `<a class="copy-btn secondary" href="${item.platform === 'YouTube' ? 'https://youtu.be/' + item.videoId : 'https://vimeo.com/' + item.videoId}" target="_blank" rel="noopener">🔗 Open Video</a>` : ''}
+      </div>` : ''}
+    </div>
+
+    <div class="card" style="margin-bottom:12px;">
+      <div class="card-title" style="margin-bottom:10px;">Quick Links</div>
+      <div class="link-list">${quickLinks}</div>
+    </div>
+
+    ${collapsible('Independent Business Owners', iboSection)}
+  </div>`;
+}
+
+window.selectShareableCategory = function(cat) {
+  shareableCategory = cat;
+  selectedShareableIdx = 0;
+  render();
+};
+
+window.selectShareable = function(idx) {
+  selectedShareableIdx = parseInt(idx, 10);
+  render();
+};
+
+function renderWords() {
+  const tabs = ['Mega School', 'Corporate'];
+  // Simplified from the razor: just the core message scripts
+  const megaSchoolShare = `
+    <div class="steps">
+      <div class="step"><span class="step-num">#1</span><span>Ask: <span class="quote">"Do you have a couple minutes?"</span></span></div>
+      <div class="step"><span class="step-num">#2</span><span>Show the 72-Hour Money Challenge video (from Shareables)</span></div>
+      <div class="step"><span class="step-num">#3</span><span>(Optional) Show the FAQ video</span></div>
+      <div class="step"><span class="step-num">#4</span><span>Ask: <span class="quote">"So, are you ready to take the challenge?"</span></span></div>
+    </div>
+    <div style="text-align:center;margin:8px 0;font-size:1.2rem;">👇</div>
+    <div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:8px;">If YES:</div>
+    <div class="steps">
+      <div class="step"><span class="step-num">#1</span><span>Share your Membership Sign-up Link (see Shareables → IBO section)</span></div>
+      <div class="step"><span class="step-num">#2</span><span>Confirm membership sign up via email confirmation to YOU</span></div>
+    </div>
+    <div style="font-size:0.85rem;color:var(--text-muted);margin:12px 0 8px;">If they have questions:</div>
+    <div class="steps">
+      <div class="step"><span class="step-num">#1</span><span><span class="quote">"Great question! I just know it works for me, but let me connect you with [MY SPONSOR] — he/she is the 'Michael Jordan' of the program. He/She knows 100% of the information. I'll set up a warm introduction, I promise."</span></span></div>
+      <div class="step"><span class="step-num">#2</span><span>Start a 3-way text thread with you, your prospect, and your upline</span></div>
+    </div>`;
+
+  const corporateShare = `
+    <div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:8px;">In Person:</div>
+    <div class="steps">
+      <div class="step"><span class="step-num">#1</span><span><span class="quote">"Do you have 5 minutes?"</span></span></div>
+      <div class="step"><span class="step-num">#2</span><span>Show the 1-on-1 Presentation (from Shareables)</span></div>
+      <div class="step"><span class="step-num">#3</span><span>Ask: <span class="quote">"So, do you want some of the money, or all of the money?"</span></span></div>
+    </div>
+    <div style="font-size:0.85rem;color:var(--text-muted);margin:12px 0 8px;">On the Phone:</div>
+    <div class="steps">
+      <div class="step"><span class="step-num">#1</span><span><span class="quote">"Let me show you this 2min video, it explains it perfectly, lol. If you have any questions, I'm going to connect you with someone FAR more qualified than me for answers."</span></span></div>
+      <div class="step"><span class="step-num">#2</span><span>Share the 72-Hour Money Challenge video link</span></div>
+      <div class="step"><span class="step-num">#3</span><span><span class="quote">"Did you watch the video?"</span></span></div>
+      <div class="step"><span class="step-num">#4</span><span><span class="quote">"So are you ready to take the challenge?"</span></span></div>
+    </div>`;
+
+  const connectSection = `
+    <div class="steps">
+      <div class="step"><span class="step-num">#1</span><span><span class="quote">"Great question! I just know it works for me, but let me connect you with [MY SPONSOR] — he/she is the 'Michael Jordan'/'Oprah Winfrey' of the program. He/She knows 100% of the information. I'll set up a warm introduction, I promise."</span></span></div>
+      <div class="step"><span class="step-num">#2</span><span>Start a 3-way text thread with you, your prospect, and your upline</span></div>
+    </div>`;
+
+  // Simple tab state using localStorage
+  const activeTab = localStorage.getItem('wordsTab') || 'Mega School';
+
+  return `<div class="page">
+    <div class="page-title">How to Share</div>
+    <div class="page-subtitle">Scripts and steps for sharing MWR with prospects.</div>
+
+    <div class="tab-row">
+      ${tabs.map(t => `<button class="tab-btn ${t === activeTab ? 'active' : ''}" onclick="switchWordsTab('${t}')">${t}</button>`).join('')}
+    </div>
+
+    ${activeTab === 'Mega School' ? `
+      ${collapsible('Share', megaSchoolShare, true)}
+      ${collapsible('Connect', connectSection)}
+    ` : `
+      ${collapsible('Share', corporateShare, true)}
+      ${collapsible('Connect', connectSection)}
+    `}
+  </div>`;
+}
+
+window.switchWordsTab = function(tab) {
+  localStorage.setItem('wordsTab', tab);
+  render();
+};
+
+function renderSettings() {
+  return `<div class="page">
+    <div class="page-title">Settings</div>
+    <div class="page-subtitle">Personalize your app experience.</div>
+
+    <div class="card">
+      <div class="card-title" style="margin-bottom:12px;">Your Member ID</div>
+      <label class="input-label">MWR Member ID (used in enrollment links)</label>
+      <input type="text" class="input-field" id="member-id-input" value="${memberId}"
+        placeholder="e.g. JohnDoe123" />
+      <button class="copy-btn" onclick="saveMemberId()" style="margin-top:4px;">Save</button>
+      ${memberId ? `<p style="font-size:0.8rem;color:var(--text-muted);margin-top:8px;">Your enrollment link: <br/><a style="color:var(--accent);word-break:break-all;" href="${enrollmentLink()}" target="_blank">${enrollmentLink()}</a></p>` : ''}
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="margin-bottom:8px;">Share This App</div>
+      <p class="card-desc" style="margin-bottom:10px;">Share the Mega School App with your team.</p>
+      <button class="copy-btn" onclick="copyText('Mega School App\n👇\nhttps://megaschool1.github.io/', 'App shareable copied!')">
+        📋 Copy App Shareable
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="margin-bottom:8px;">Install as App</div>
+      <p class="card-desc">For instant load times, install this as a PWA. In your browser menu, tap <strong style="color:var(--text)">Add to Home Screen</strong> or <strong style="color:var(--text)">Install App</strong>.</p>
+    </div>
+
+    <div class="version-tag">Version 2026.3.1 (JavaScript PWA)</div>
+  </div>`;
+}
+
+window.saveMemberId = function() {
+  const val = document.getElementById('member-id-input')?.value?.trim() || '';
+  memberId = val;
+  localStorage.setItem('memberId', val);
+  render();
+  showToast('Member ID saved!');
+};
+
+// ═══════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════
+function render() {
+  const main = document.getElementById('main-content');
+  switch(currentPage) {
+    case 'home':       main.innerHTML = renderHome(); break;
+    case 'shareables': main.innerHTML = renderShareables(); break;
+    case 'words':      main.innerHTML = renderWords(); break;
+    case 'settings':   main.innerHTML = renderSettings(); break;
+    default:           main.innerHTML = renderHome();
+  }
+  // Restore active nav state
+  document.querySelectorAll('.nav-item[onclick]').forEach(el => {
+    const match = el.getAttribute('onclick')?.match(/navigate\('(.+?)'\)/);
+    if (match) el.classList.toggle('active', match[1] === currentPage);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// PWA INSTALL
+// ═══════════════════════════════════════════════
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const banner = document.getElementById('install-banner');
+  if (banner) banner.classList.add('show');
+});
+
+window.installApp = function() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+  }
+};
+
+// ═══════════════════════════════════════════════
+// SERVICE WORKER
+// ═══════════════════════════════════════════════
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+render();
+</script>
+</body>
+</html>
